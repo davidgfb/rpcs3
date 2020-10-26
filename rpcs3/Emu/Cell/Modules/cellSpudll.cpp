@@ -8,12 +8,9 @@
 LOG_CHANNEL(cellSpudll);
 
 template<>
-void fmt_class_string<CellSpudllError>::format(std::string& out, u64 arg)
-{
-	format_enum(out, arg, [](auto error)
-	{
-		switch (error)
-		{
+void fmt_class_string<CellSpudllError>::format(std::string& out, u64 arg) {
+	format_enum(out, arg, [](auto error) {
+		switch (error) {
 			STR_CASE(CELL_SPUDLL_ERROR_INVAL);
 			STR_CASE(CELL_SPUDLL_ERROR_STAT);
 			STR_CASE(CELL_SPUDLL_ERROR_ALIGN);
@@ -27,27 +24,29 @@ void fmt_class_string<CellSpudllError>::format(std::string& out, u64 arg)
 	});
 }
 
-error_code cellSpudllGetImageSize(vm::ptr<u32> psize, vm::cptr<void> so_elf, vm::cptr<CellSpudllHandleConfig> config)
-{
+error_code cellSpudllGetImageSize(vm::ptr<u32> psize, vm::cptr<void> so_elf, vm::cptr<CellSpudllHandleConfig> config) {
+	
+	error_code errorCode = CELL_OK;
+	
 	cellSpudll.todo("cellSpudllGetImageSize(psize=*0x%x, so_elf=*0x%x, config=*0x%x)", psize, so_elf, config);
 
-	if (!psize || !so_elf)
-	{
-		return CELL_SPUDLL_ERROR_NULL_POINTER;
+	if (!psize || !so_elf) {
+		errorCode = CELL_SPUDLL_ERROR_NULL_POINTER;
 	}
 
 	// todo
 
-	return CELL_OK;
+	return errorCode;
 }
 
-error_code cellSpudllHandleConfigSetDefaultValues(vm::ptr<CellSpudllHandleConfig> config)
-{
+error_code cellSpudllHandleConfigSetDefaultValues(vm::ptr<CellSpudllHandleConfig> config) {
+	
+	error_code errorCode = CELL_OK;
+	
 	cellSpudll.trace("cellSpudllHandleConfigSetDefaultValues(config=*0x%x)", config);
 
-	if (!config)
-	{
-		return CELL_SPUDLL_ERROR_NULL_POINTER;
+	if (!config) {
+		errorCode = CELL_SPUDLL_ERROR_NULL_POINTER;
 	}
 
 	config->mode = 0;
@@ -60,11 +59,10 @@ error_code cellSpudllHandleConfigSetDefaultValues(vm::ptr<CellSpudllHandleConfig
 
 	std::memset(config->__reserved__, 0, sizeof(config->__reserved__));
 
-	return CELL_OK;
+	return errorCode;
 }
 
-DECLARE(ppu_module_manager::cellSpudll)("cellSpudll", []()
-{
+DECLARE(ppu_module_manager::cellSpudll)("cellSpudll", []() {
 	REG_FUNC(cellSpudll, cellSpudllGetImageSize);
 	REG_FUNC(cellSpudll, cellSpudllHandleConfigSetDefaultValues).flag(MFF_PERFECT);
 });
